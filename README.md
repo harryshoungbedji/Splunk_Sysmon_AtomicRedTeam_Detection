@@ -129,10 +129,15 @@ disabled = false
 Go to http://localhost:8000 → Search & Reporting → run this — set time to All Time:
 ```
 index=main | stats count by sourcetype
-``
+```
+![Sysmon config download](https://github.com/user-attachments/assets/7f352220-9200-4266-bdbf-dad43bf39733)
 
-
-
+---
+### Step 7 —  Verify EventID field extracts automatically
+```
+index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" | stats count by EventID | sort -count
+```
+![Sysmon config download](https://github.com/user-attachments/assets/0952ee38-1522-47b9-adc6-9ff5efb35226)
 
 
 
