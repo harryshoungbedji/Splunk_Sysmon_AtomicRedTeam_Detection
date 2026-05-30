@@ -27,12 +27,16 @@ This lab demonstrates how to deploy a SIEM, capture endpoint telemetry, simulate
 ### Step 1 — Download Splunk Enterprise
 
 1. Inside your Windows 10 VM open a browser and go to:
+```url
 https://www.splunk.com/en_us/download/splunk-enterprise.html
+```
 2. Create a free account and download the Windows `.msi` installer
 3. Run the installer as Administrator — leave the install path as default and create a username and password
 4. Write down your credentials — you will need them constantly
 5. Once complete verify Splunk is running by opening a browser and going to:
+```url
 http://localhost:8000
+```
 6. Log in with your credentials — you should see the Splunk home dashboard
 
 ---
