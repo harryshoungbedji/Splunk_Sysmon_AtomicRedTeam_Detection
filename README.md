@@ -1,27 +1,27 @@
 # SOC Threat Detection Lab
 This lab demonstrates how to deploy a SIEM, capture endpoint telemetry, simulate real adversary techniques, and build detections mapped to the MITRE ATT&CK framework.
 
----------------------------------------------------------------------------------------------
-#### Tools Used
+-------
+### Tools Used
 - Splunk Enterprise
 - Sysmon (Olafharttong config)
 - Atomic Red Team
 - PowerShell
 - Windows 10 (VirtualBox VM)
 - MITRE ATT&CK Framework
----------------------------------------------------------------------------------------------
-#### Architecture
+-----
+### Architecture
 - Windows 10 VM running both Sysmon and Splunk
 - Sysmon captures endpoint telemetry and forwards to Splunk via WinEventLog inpunt
 - Aomic Red Team simulates adversary techniques on the same host
 - Use SPL queries to detect simulated attacks
----------------------------------------------------------------------------------------------
-#### Setup
+-----
+### Setup
 ###### Prerequisites
 - VirtualBox Installed
 - Windows 10 VM [8GB RAM, 4 CPUs, 50 GB Disk] (A lower Ram or CPU may affect the Splunk's response time causing lag)
 - Internet access for the VM (NAT)
---------------------------------------------------------------------------------------------
+-------
 ## Installation
 
 ### Step 1 — Download Splunk Enterprise
@@ -75,3 +75,54 @@ Status should say **Running**
 
 7. Verify events are flowing - open Event Viewer and navigate to:
    *Applications and Services Logs → Microsoft → Windows → Sysmon → Operational
+
+---
+
+### Step 3  —  Connect Sysmon to Splunk
+```powershel
+@"
+[WinEventLog://Microsoft-Windows-Sysmon/Operational]
+index = main
+sourcetype = WinEventLog:Microsoft-Windows-Sysmon/Operational
+disabled = false
+start_from = oldest
+current_only = 0
+checkpointInterval = 5
+
+[WinEventLog://Security]
+index = main
+sourcetype = WinEventLog:Security
+disabled = false
+
+[WinEventLog://System]
+index = main
+sourcetype = WinEventLog:System
+disabled = false
+"@ | Out-File -FilePath "C:\Program Files\Splunk\etc\system\local\inputs.conf" -Encoding UTF8
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
