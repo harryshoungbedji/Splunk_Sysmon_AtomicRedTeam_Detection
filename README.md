@@ -200,4 +200,36 @@ You should see a list of test names for T1082
 
 ---
 
-### Part 3 — Install Atomic Red Team
+### Part 4 — Attacks
+
+Detections
+T1082 — System Information Discovery
+
+Sysmon EventID 1
+Detects systeminfo and reg query commands spawned via PowerShell
+
+index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 CommandLine="*systeminfo*" | table _time, Image, CommandLine, ParentImage | sort -_time
+T1003.001 — LSASS Memory Dump
+
+Sysmon EventID 10
+Detects procdump.exe opening a full access handle to lsass.exe
+
+index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=10 TargetImage="*lsass*" | table _time, SourceImage, TargetImage, GrantedAccess | sort -_time
+T1547.001 — Registry Run Key Persistence
+
+Sysmon EventID 13
+Detects reg.exe writing to CurrentVersion\Run autostart key
+
+index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13 TargetObject="*CurrentVersion\\Run*" | table _time, Image, TargetObject, Details | sort -_time
+T1055 — Process Injection
+
+Sysmon EventID 8
+Detects CreateRemoteThread injection into calc.exe
+
+index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=8 | table _time, SourceImage, TargetImage, StartAddress | sort -_time
+T1059.001 — Fileless Mimikatz via PowerShell
+
+Sysmon EventID 1
+Detects PowerShell IEX downloading and executing Mimikatz in memory
+
+index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 (CommandLine="*mimikatz*" OR CommandLine="*sekurlsa*" OR CommandLine="*IEX*") | table _time, Image, CommandLine, ParentImage | sort -_time
