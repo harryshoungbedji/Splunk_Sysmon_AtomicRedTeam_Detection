@@ -15,12 +15,14 @@ This lab demonstrates how to deploy a SIEM, capture endpoint telemetry, simulate
 - Sysmon captures endpoint telemetry and forwards to Splunk via WinEventLog inpunt
 - Aomic Red Team simulates adversary techniques on the same host
 - Use SPL queries to detect simulated attacks
+  
 -----
 ### Setup
 ###### Prerequisites
 - VirtualBox Installed
 - Windows 10 VM [8GB RAM, 4 CPUs, 50 GB Disk] (A lower Ram or CPU may affect the Splunk's response time causing lag)
 - Internet access for the VM (NAT)
+  
 -------
 ## Installation
 
@@ -101,10 +103,26 @@ disabled = false
 "@ | Out-File -FilePath "C:\Program Files\Splunk\etc\system\local\inputs.conf" -Encoding UTF8
 ```
 
+---
+### Step 4  —  Install the splunk Add-on for Sysmon
+1. Go to this URL inside your VM browser:
+   ```url
+   https://splunkbase.splunk.com/app/5709
+   ```
+2. Click Download, you'll need to be logged into your splunk account. It downloads as a `.tgz`
+3. Navigate to the Apps menu (top left, gear icon next to "Apps", select "Manage")
+ - Click Install app from file
+ - Click Choose File → select the .tgz you just downloaded
+ - Click Upload
+![Sysmon config download](https://github.com/user-attachments/assets/95d8616d-9bfe-444c-868e-bf1e574c2d33)
 
+---
+### Step 5  —  Restart Splunk
 
-
-
+   ```powershell
+   & "C:\Program Files\Splunk\bin\splunk.exe" restart
+   ```
+![Sysmon config download](https://github.com/user-attachments/assets/a0d3d517-c1b7-4e39-92be-5e1b60993d1d)
 
 
 
