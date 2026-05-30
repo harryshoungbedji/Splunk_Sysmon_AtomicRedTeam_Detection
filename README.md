@@ -167,7 +167,7 @@ If you see results here the setup is complete and working correctly.
 ```powershell
 Set-MpPreference -DisableRealtimeMonitoring $true
 ```
-> ⚠️ Only disable Defender in your isolated lab VM — never on a real machine
+> ⚠️ Only disable Defender in your isolated lab VM — and not on a real machine
 
 #### Step 2 — Set Execution Policy
 ```powershell
@@ -213,7 +213,7 @@ You should see a list of test names for T1082
 
 ### Part 4 — Attacks and Detections
 
-> ⚠️ Only run these tests in your isolated lab VM
+> ⚠️ Please only run these tests in your isolated lab VM
 
 ---
 
@@ -320,3 +320,6 @@ not own or have explicit permission to test.
 - https://github.com/redcanaryco/atomic-red-team
 - https://github.com/olafhartong/sysmon-modular
 - https://docs.splunk.com
+- https://docs.splunk.com/Documentation/Splunk/8.2.12/Admin/Inputsconf
+- https://github.com/redcanaryco/invoke-atomicredteam/wiki/Installing-Invoke-AtomicRedTeam
+- https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1003.001/T1003.001.md
