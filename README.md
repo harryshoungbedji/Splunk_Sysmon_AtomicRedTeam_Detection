@@ -58,3 +58,5 @@ C:\Tools\Sysmon
 ```powershell
    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/olafhartong/sysmon-modular/master/sysmonconfig.xml" -OutFile "C:\Tools\sysmonconfig-lab.xml"
 ```
+<img width="932" height="159" alt="Screenshot 2026-05-29 134445" src="https://github.com/user-attachments/assets/1a1332f1-cc29-4aa8-8532-452ae4ea9c60" />
+
