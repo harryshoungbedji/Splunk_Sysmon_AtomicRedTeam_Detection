@@ -30,6 +30,7 @@ Step 1 -- Download Splunk Enterprise
    - Leave install path as default and create a User/Pass
    - Once complete verify splunk is running; Open browser and go to : http://localhost:8000
    - Login with you credential created and you should see Splunk home dashboard
+
 Step 2 -- Install Sysmon
      Create a Tools folder and download Sysmon:
      https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon
