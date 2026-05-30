@@ -58,10 +58,18 @@ C:\Tools\Sysmon
    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/olafhartong/sysmon-modular/master/sysmonconfig.xml" -OutFile "C:\Tools\sysmonconfig-lab.xml"
 ```
 <img width="932" height="159" alt="Screenshot 2026-05-29 134445" src="https://github.com/user-attachments/assets/1a1332f1-cc29-4aa8-8532-452ae4ea9c60" />
+
 5. Install Sysmon with the config"
 ```powershell
    cd C:\Tools\Sysmon
    .\Sysmon64.exe -accepteula -i C:\Tools\sysmonconfig-lab.xml
 ```
-<img width="918" height="308" alt="Screenshot 2026-05-29 134539" src="https://github.com/user-attachments/assets/047c7e5e-910e-48a6-a603-2558360b7aea" />
+<img width="870" height="323" alt="Screenshot 2026-05-29 134650" src="https://github.com/user-attachments/assets/89396635-20b2-4885-8e88-eb149d70907a" />
+
+
+6. Verify Sysmon is running"
+```powershel
+   Get-Service Sysmon64
+```
+
 
