@@ -10,3 +10,7 @@ This lab demonstrates how to deploy a SIEM, capture endpoint telemetry, simulate
 - Windows 10 (VirtualBox VM)
 - MITRE ATT&CK Framework
 ---------------------------------------------------------------------------------------------
+#### Setup
+###### Prerequisites
+- VirtualBox Installed
+- Windows 10 VM [8GB RAM, 4 CPUs, 50 GB Disk] (A lower Ram or CPU may affect the Splunk's response time causing lag)
