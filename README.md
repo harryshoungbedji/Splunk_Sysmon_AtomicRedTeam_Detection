@@ -71,7 +71,7 @@ C:\Tools\Sysmon
 5. Install Sysmon with the config:
 ```powershell
    cd C:\Tools\Sysmon
-   .\Sysmon64.exe -accepteula -i C:\Tools\sysmonconfig-lab.xml
+   .\Sysmon64.exe -accepteula -i C:\Tools\Sysmon\sysmonconfig-lab.xml
 ```
    ![Installing Sysmon](https://github.com/user-attachments/assets/89396635-20b2-4885-8e88-eb149d70907a)
 
