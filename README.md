@@ -32,11 +32,9 @@ Step 1 -- Download Splunk Enterprise
    - Login with you credential created and you should see Splunk home dashboard
 
 Step 2 -- Install Sysmon
-     Create a Tools folder and download Sysmon:
-     https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon
-     
+     Create a Tools folder and download Sysmon: https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon
      - Unzip the download and extract content into the Tools folder e.g(C:\Tools\Sysmon)
-     - Use PowerShell in Admin mode to dowload the olafhartong config file as it is less restrictive and better for lab use
+     - Use PowerShell in Admin mode to dowload the olafhartong config file as it is less restrictive and better for lab use:
      <img width="932" height="159" alt="Screenshot 2026-05-29 134445" src="https://github.com/user-attachments/assets/2977787c-2db0-46ec-954d-afefb3cee2dc" />
 
 
