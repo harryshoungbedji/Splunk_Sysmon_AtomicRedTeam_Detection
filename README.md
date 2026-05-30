@@ -140,7 +140,9 @@ https://splunkbase.splunk.com/app/5709
 ### Step 6 — Verify Data Ingestion
 
 Go to `http://localhost:8000` → Search & Reporting → set time to **All Time** and run:
+```
 index=main | stats count by sourcetype
+```
 You should see `WinEventLog:Microsoft-Windows-Sysmon/Operational` with a count
 in the hundreds or thousands
 
@@ -149,9 +151,11 @@ in the hundreds or thousands
 ---
 
 ### Step 7 — Verify EventID Field Extraction
+```
 index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational"
 | stats count by EventID
 | sort -count
+```
 You should see a clean table with EventID numbers like 1, 3, 7, 10, 11, 13.
 If you see results here the setup is complete and working correctly.
 
