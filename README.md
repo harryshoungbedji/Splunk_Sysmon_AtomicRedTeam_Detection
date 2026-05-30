@@ -303,7 +303,7 @@ EventID=1 (CommandLine="mimikatz" OR CommandLine="sekurlsa" OR CommandLine="IEX"
 
 ---
 
-#### Cleanup — Run After All Tests
+#### Cleanup Environment or restore VM from snaphot
 ```powershell
 Invoke-AtomicTest T1082 -TestNumbers 1 -Cleanup
 Invoke-AtomicTest T1003.001 -TestNumbers 1 -Cleanup
