@@ -1,7 +1,7 @@
 # SOC Threat Detection Lab
 
-This lab demonstrates how to deploy a SIEM, capture endpoint telemetry, 
-simulate real adversary techniques, and build detections mapped to the 
+This lab demonstrates how to deploy a SIEM, capture endpoint telemetry,
+simulate real adversary techniques, and build detections mapped to the
 MITRE ATT&CK framework.
 
 ---
@@ -49,8 +49,10 @@ http://localhost:8000
 
 ---
 
-### Part 2 — Install Sysmon
-#### Step 1
+### Part 2 — Install and Configure Sysmon
+
+#### Step 1 — Install Sysmon
+
 1. Open PowerShell as Administrator and create a Tools folder:
 ```powershell
    mkdir C:\Tools
@@ -59,8 +61,8 @@ http://localhost:8000
 https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon
 3. Unzip the download and extract contents to:
 C:\Tools\Sysmon
-4. Download the olafhartong config — this config is less restrictive than
-   SwiftOnSecurity and better suited for lab use:
+4. Download the olafhartong config — less restrictive than SwiftOnSecurity
+   and better suited for lab use:
 ```powershell
    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/olafhartong/sysmon-modular/master/sysmonconfig.xml" -OutFile "C:\Tools\sysmonconfig-lab.xml"
 ```
@@ -116,7 +118,7 @@ disabled = false
 
 1. Go to this URL inside your VM browser:
 https://splunkbase.splunk.com/app/5709
-2. Click **Download** — you must be logged into your Splunk account
+2. Click **Download** — you must be logged into your Splunk account.
    The file downloads as a `.tgz`
 3. In Splunk at `http://localhost:8000`:
    - Click the gear icon next to **Apps** → select **Manage Apps**
@@ -137,25 +139,21 @@ https://splunkbase.splunk.com/app/5709
 
 ---
 
-### Step 6 — Verify Data Ingestion
+#### Step 5 — Verify Data Ingestion
 
 Go to `http://localhost:8000` → Search & Reporting → set time to **All Time** and run:
-```
 index=main | stats count by sourcetype
-```
-You should see `WinEventLog:Microsoft-Windows-Sysmon/Operational` with a count
-in the hundreds or thousands
+You should see `WinEventLog:Microsoft-Windows-Sysmon/Operational` with a
+count in the hundreds or thousands
 
 ![Verifying data ingestion](https://github.com/user-attachments/assets/7f352220-9200-4266-bdbf-dad43bf39733)
 
 ---
 
-#### Step 7 — Verify EventID Field Extraction
-```
+#### Step 6 — Verify EventID Field Extraction
 index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational"
 | stats count by EventID
 | sort -count
-```
 You should see a clean table with EventID numbers like 1, 3, 7, 10, 11, 13.
 If you see results here the setup is complete and working correctly.
 
@@ -164,24 +162,35 @@ If you see results here the setup is complete and working correctly.
 ---
 
 ### Part 3 — Install Atomic Red Team
-####Step 1 — Disable Windows Defender
-####Step 2 —  Set execution policy
+
+#### Step 1 — Disable Windows Defender
+```powershell
+Set-MpPreference -DisableRealtimeMonitoring $true
+```
+> ⚠️ Only disable Defender in your isolated lab VM — never on a real machine
+
+#### Step 2 — Set Execution Policy
 ```powershell
 Set-ExecutionPolicy Bypass -Scope CurrentUser -Force
 ```
-####Step 3 — Install the framework
+
+#### Step 3 — Install the Framework
 ```powershell
 IEX (IWR 'https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/install-atomicredteam.ps1' -UseBasicParsing)
 ```
-####Step 4 —  Install the atomics folder
+
+#### Step 4 — Install the Atomics Folder
 ```powershell
 Install-AtomicRedTeam -getAtomics -Force -InstallPath "C:\AtomicRedTeam"
 ```
-####Step 5 — Import the module
+
+#### Step 5 — Import the Module
 ```powershell
 Import-Module "C:\AtomicRedTeam\invoke-atomicredteam\Invoke-AtomicRedTeam.psd1" -Force
 ```
-####Step 6 — Install ProcDump
+
+#### Step 6 — Install ProcDump
+ProcDump is required for the credential dumping test (T1003.001):
 ```powershell
 Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Procdump.zip" -OutFile "C:\Tools\Procdump.zip"
 
@@ -191,45 +200,123 @@ New-Item -ItemType Directory "C:\AtomicRedTeam\ExternalPayloads" -Force
 
 Copy-Item "C:\Tools\Procdump\procdump64.exe" "C:\AtomicRedTeam\ExternalPayloads\procdump.exe"
 ```
-####Step 7 — Verify Atomic Red Team works
+
+#### Step 7 — Verify Atomic Red Team Works
 ```powershell
 Invoke-AtomicTest T1082 -ShowDetailsBrief
 ```
 You should see a list of test names for T1082
+
 ![Verifying Atomic Works](https://github.com/user-attachments/assets/a305e9cf-9a93-4967-821f-1984661566d9)
 
 ---
 
-### Part 4 — Attacks
+### Part 4 — Attacks and Detections
 
-Detections
-T1082 — System Information Discovery
+> ⚠️ Only run these tests in your isolated lab VM
 
-Sysmon EventID 1
-Detects systeminfo and reg query commands spawned via PowerShell
+---
 
-index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 CommandLine="*systeminfo*" | table _time, Image, CommandLine, ParentImage | sort -_time
-T1003.001 — LSASS Memory Dump
+#### T1082 — System Information Discovery
+- **Sysmon EventID:** 1
+- **What it detects:** systeminfo and reg query commands spawned via PowerShell
 
-Sysmon EventID 10
-Detects procdump.exe opening a full access handle to lsass.exe
+**Run the attack:**
+```powershell
+Invoke-AtomicTest T1082 -TestNumbers 1
+```
+**Detect in Splunk — All Time:**
+index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational"
+EventID=1 CommandLine="systeminfo"
+| table _time, Image, CommandLine, ParentImage
+| sort -_time
 
-index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=10 TargetImage="*lsass*" | table _time, SourceImage, TargetImage, GrantedAccess | sort -_time
-T1547.001 — Registry Run Key Persistence
+---
 
-Sysmon EventID 13
-Detects reg.exe writing to CurrentVersion\Run autostart key
+#### T1003.001 — LSASS Memory Dump
+- **Sysmon EventID:** 10
+- **What it detects:** procdump.exe opening a full access handle to lsass.exe
 
-index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=13 TargetObject="*CurrentVersion\\Run*" | table _time, Image, TargetObject, Details | sort -_time
-T1055 — Process Injection
+**Run the attack:**
+```powershell
+Invoke-AtomicTest T1003.001 -TestNumbers 1
+```
+**Detect in Splunk — All Time:**
+index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational"
+EventID=10 TargetImage="lsass"
+| table _time, SourceImage, TargetImage, GrantedAccess
+| sort -_time
 
-Sysmon EventID 8
-Detects CreateRemoteThread injection into calc.exe
+---
 
-index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=8 | table _time, SourceImage, TargetImage, StartAddress | sort -_time
-T1059.001 — Fileless Mimikatz via PowerShell
+#### T1547.001 — Registry Run Key Persistence
+- **Sysmon EventID:** 13
+- **What it detects:** reg.exe writing to CurrentVersion\Run autostart key
 
-Sysmon EventID 1
-Detects PowerShell IEX downloading and executing Mimikatz in memory
+**Run the attack:**
+```powershell
+Invoke-AtomicTest T1547.001 -TestNumbers 1
+```
+**Detect in Splunk — All Time:**
+index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational"
+EventID=13 TargetObject="CurrentVersion\Run"
+| table _time, Image, TargetObject, Details
+| sort -_time
 
-index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1 (CommandLine="*mimikatz*" OR CommandLine="*sekurlsa*" OR CommandLine="*IEX*") | table _time, Image, CommandLine, ParentImage | sort -_time
+---
+
+#### T1055 — Process Injection
+- **Sysmon EventID:** 8
+- **What it detects:** CreateRemoteThread injection into calc.exe
+- **Note:** Use TestNumbers 4 — TestNumbers 1 requires Microsoft Office
+
+**Run the attack:**
+```powershell
+Invoke-AtomicTest T1055 -TestNumbers 4
+```
+**Detect in Splunk — All Time:**
+index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational"
+EventID=8
+| table _time, SourceImage, TargetImage, StartAddress
+| sort -_time
+
+---
+
+#### T1059.001 — Fileless Mimikatz via PowerShell
+- **Sysmon EventID:** 1
+- **What it detects:** PowerShell IEX downloading and executing Mimikatz in memory
+
+**Run the attack:**
+```powershell
+Invoke-AtomicTest T1059.001 -TestNumbers 1
+```
+**Detect in Splunk — All Time:**
+index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational"
+EventID=1 (CommandLine="mimikatz" OR CommandLine="sekurlsa" OR CommandLine="IEX")
+| table _time, Image, CommandLine, ParentImage
+| sort -_time
+
+---
+
+#### Cleanup — Run After All Tests
+```powershell
+Invoke-AtomicTest T1082 -TestNumbers 1 -Cleanup
+Invoke-AtomicTest T1003.001 -TestNumbers 1 -Cleanup
+Invoke-AtomicTest T1547.001 -TestNumbers 1 -Cleanup
+Invoke-AtomicTest T1059.001 -TestNumbers 1 -Cleanup
+```
+
+---
+
+## Disclaimer
+This lab is for educational purposes only. All techniques were simulated
+in an isolated virtual machine. Never run these tools on systems you do
+not own or have explicit permission to test.
+
+---
+
+## References
+- https://attack.mitre.org
+- https://github.com/redcanaryco/atomic-red-team
+- https://github.com/olafhartong/sysmon-modular
+- https://docs.splunk.com
