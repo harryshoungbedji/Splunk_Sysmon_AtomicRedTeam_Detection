@@ -36,7 +36,7 @@ MITRE ATT&CK framework.
 
 ## Installation
 
-### Step 1 — Install Splunk Enterprise
+### Part 1 — Install Splunk Enterprise
 
 1. Inside your Windows 10 VM open a browser and go to:
 https://www.splunk.com/en_us/download/splunk-enterprise.html
@@ -49,8 +49,8 @@ http://localhost:8000
 
 ---
 
-### Step 2 — Install Sysmon
-
+### Part 2 — Install Sysmon
+#### Step 1
 1. Open PowerShell as Administrator and create a Tools folder:
 ```powershell
    mkdir C:\Tools
@@ -85,7 +85,7 @@ Applications and Services Logs → Microsoft → Windows → Sysmon → Operatio
 
 ---
 
-### Step 3 — Connect Sysmon to Splunk
+#### Step 2 — Connect Sysmon to Splunk
 
 Run this entire block in Admin PowerShell to create inputs.conf:
 ```powershell
@@ -112,7 +112,7 @@ disabled = false
 
 ---
 
-### Step 4 — Install Splunk Add-on for Sysmon
+#### Step 3 — Install Splunk Add-on for Sysmon
 
 1. Go to this URL inside your VM browser:
 https://splunkbase.splunk.com/app/5709
@@ -128,7 +128,7 @@ https://splunkbase.splunk.com/app/5709
 
 ---
 
-### Step 5 — Restart Splunk
+#### Step 4 — Restart Splunk
 
 ```powershell
 & "C:\Program Files\Splunk\bin\splunk.exe" restart
@@ -150,7 +150,7 @@ in the hundreds or thousands
 
 ---
 
-### Step 7 — Verify EventID Field Extraction
+#### Step 7 — Verify EventID Field Extraction
 ```
 index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational"
 | stats count by EventID
@@ -160,3 +160,44 @@ You should see a clean table with EventID numbers like 1, 3, 7, 10, 11, 13.
 If you see results here the setup is complete and working correctly.
 
 ![EventID field extraction](https://github.com/user-attachments/assets/0952ee38-1522-47b9-adc6-9ff5efb35226)
+
+---
+
+### Part 3 — Install Atomic Red Team
+####Step 1 — Disable Windows Defender
+####Step 2 —  Set execution policy
+```powershell
+Set-ExecutionPolicy Bypass -Scope CurrentUser -Force
+```
+####Step 3 — Install the framework
+```powershell
+IEX (IWR 'https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/install-atomicredteam.ps1' -UseBasicParsing)
+```
+####Step 4 —  Install the atomics folder
+```powershell
+Install-AtomicRedTeam -getAtomics -Force -InstallPath "C:\AtomicRedTeam"
+```
+####Step 5 — Import the module
+```powershell
+Import-Module "C:\AtomicRedTeam\invoke-atomicredteam\Invoke-AtomicRedTeam.psd1" -Force
+```
+####Step 6 — Install ProcDump
+```powershell
+Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Procdump.zip" -OutFile "C:\Tools\Procdump.zip"
+
+Expand-Archive C:\Tools\Procdump.zip -DestinationPath C:\Tools\Procdump
+
+New-Item -ItemType Directory "C:\AtomicRedTeam\ExternalPayloads" -Force
+
+Copy-Item "C:\Tools\Procdump\procdump64.exe" "C:\AtomicRedTeam\ExternalPayloads\procdump.exe"
+```
+####Step 7 — Verify Atomic Red Team works
+```powershell
+Invoke-AtomicTest T1082 -ShowDetailsBrief
+```
+You should see a list of test names for T1082
+![Verifying Atomic Works](https://github.com/user-attachments/assets/a305e9cf-9a93-4967-821f-1984661566d9)
+
+---
+
+### Part 3 — Install Atomic Red Team
