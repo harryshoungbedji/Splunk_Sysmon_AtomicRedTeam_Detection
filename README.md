@@ -124,7 +124,12 @@ disabled = false
    ```
 ![Sysmon config download](https://github.com/user-attachments/assets/a0d3d517-c1b7-4e39-92be-5e1b60993d1d)
 
-
+---
+### Step 6 —  Verify data is being ingested into splunk
+Go to http://localhost:8000 → Search & Reporting → run this — set time to All Time:
+```
+index=main | stats count by sourcetype
+``
 
 
 
