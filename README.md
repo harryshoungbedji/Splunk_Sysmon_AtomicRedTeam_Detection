@@ -290,11 +290,16 @@ EventID=8
 ```powershell
 Invoke-AtomicTest T1059.001 -TestNumbers 1
 ```
+![T1059.001 Attack](https://github.com/user-attachments/assets/e647ea55-53d9-4081-b115-9e886a3c2e3a)
+
+
+
 **Detect in Splunk — All Time:**
 index=main sourcetype="WinEventLog:Microsoft-Windows-Sysmon/Operational"
 EventID=1 (CommandLine="mimikatz" OR CommandLine="sekurlsa" OR CommandLine="IEX")
 | table _time, Image, CommandLine, ParentImage
 | sort -_time
+![Splunk T1059.001 Detection](https://github.com/user-attachments/assets/a16d7526-fbf7-4add-8b2f-7b8db18687bc)
 
 ---
 
