@@ -44,5 +44,13 @@ http://localhost:8000
    mkdir C:\Tools
 ```
 2. Download Sysmon from:
+```url
 https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon
-3. Unzip the download and extract contents into the Tools folder:
+```
+
+4. Unzip the download and extract contents into the Tools folder:
+C:\Tools\Sysmon
+5. Open PowerShell as Administrator and download the olafhartong config file.This config is less restrictive than SwiftOnSecurity and better suited for lab use:
+```powershell
+   Invoke-WebRequest -Uri "https://raw.githubusercontent.com/olafhartong/sysmon-modular/master/sysmonconfig.xml" -OutFile "C:\Tools\sysmonconfig-lab.xml"
+```
