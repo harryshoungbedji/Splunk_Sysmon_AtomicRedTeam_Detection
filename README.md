@@ -73,4 +73,4 @@ C:\Tools\Sysmon
   Status should say **Running**
 
 7. Verify events are flowing - open Event Viewer and navigate to:
-Applications and Services Logs → Microsoft → Windows → Sysmon → Operational
+   Applications and Services Logs → Microsoft → Windows → Sysmon → Operational
